@@ -1,6 +1,4 @@
-package org.echocat.repo4j.remove;
-
-import org.echocat.repo4j.matching.Query;
+package org.echocat.repo4j.matching;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;

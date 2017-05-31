@@ -10,6 +10,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Optional.ofNullable;
@@ -59,8 +60,10 @@ public interface Range<V> extends Predicate<V> {
         return new Base<>(from, to, Double::compare);
     }
 
+    @SuppressWarnings("rawtypes")
     @Nonnull
-    static <V extends Comparable<V>> Range<V> rangeOf(@Nullable @Including V from, @Nullable @Excluding V to) {
+    static <V extends Comparable> Range<V> rangeOf(@Nullable @Including V from, @Nullable @Excluding V to) {
+        //noinspection unchecked
         return new Base<>(from, to, Comparable::compareTo);
     }
 

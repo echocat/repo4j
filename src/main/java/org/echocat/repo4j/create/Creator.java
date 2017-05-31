@@ -26,7 +26,7 @@ public interface Creator<V, R extends Requirement<V>> extends Function<R, V> {
     }
 
     @Nonnull
-    static <V, R extends Requirement<V>> Creator<V, R> genericGeneratorFor(@Nonnull Class<V> type) {
+    static <V> Creator<V, Requirement<V>> genericGeneratorFor(@Nonnull Class<V> type) {
         return new Base<>(type);
     }
 

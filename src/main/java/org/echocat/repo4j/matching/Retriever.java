@@ -12,14 +12,14 @@ public interface Retriever<T, Q extends Query<T>> {
      * Find all entities that matches given query.
      */
     @Nonnull
-    Stream<T> findBy(@Nonnull Q query);
+    Stream<? extends T> findBy(@Nonnull Q query);
 
     /**
      * Find one entity that matches given query.
      */
     @Nonnull
-    default Optional<T> findOneBy(@Nonnull Q query) {
-        try (final Stream<T> stream = findBy(query)) {
+    default Optional<? extends T> findOneBy(@Nonnull Q query) {
+        try (final Stream<? extends T> stream = findBy(query)) {
             return stream.findAny();
         }
     }
@@ -29,7 +29,7 @@ public interface Retriever<T, Q extends Query<T>> {
      */
     @Nonnegative
     default long countBy(@Nonnull Q query) {
-        try (final Stream<T> stream = findBy(query)) {
+        try (final Stream<? extends T> stream = findBy(query)) {
             return stream.count();
         }
     }

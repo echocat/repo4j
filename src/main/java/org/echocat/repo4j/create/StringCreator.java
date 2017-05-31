@@ -1,6 +1,6 @@
 package org.echocat.repo4j.create;
 
-import org.echocat.repo4j.create.Requirement.ContainingRequirement;
+import org.echocat.repo4j.create.Requirement.TemplateBasedRequirement;
 import org.echocat.repo4j.create.Requirement.UniqueRequirement;
 
 import javax.annotation.Nonnull;
@@ -15,26 +15,11 @@ import java.util.regex.Pattern;
 
 import static java.util.Optional.ofNullable;
 import static java.util.regex.Matcher.quoteReplacement;
-import static java.util.regex.Pattern.LITERAL;
-import static java.util.regex.Pattern.compile;
 import static org.echocat.repo4j.util.UniqueValueCreator.uuid;
 
 @Immutable
 @ThreadSafe
 public class StringCreator extends Creator.Base<String, Requirement<String>> {
-
-    public static final String UNIQUE_VALUE_PLACE_HOLDER = "$$uniqueValue$$";
-
-    @Nonnull
-    protected static final Pattern PLACE_HOLDER_PATTERN = compile(UNIQUE_VALUE_PLACE_HOLDER, LITERAL);
-    @Nonnull
-    private static final StringCreator DEFAULT = stringCreator()
-        .build();
-
-    @Nonnull
-    public static StringCreator defaultStringCreator() {
-        return DEFAULT;
-    }
 
     @Nonnull
     public static Builder stringCreator() {
@@ -54,43 +39,42 @@ public class StringCreator extends Creator.Base<String, Requirement<String>> {
     @Nonnull
     @Override
     public String createBy(@Nonnull Requirement<String> requirement) {
+        if (requirement instanceof Requirement.TemplateBasedRequirement) {
+            return createBy((TemplateBasedRequirement<String, Pattern>) requirement);
+        }
         if (requirement instanceof UniqueRequirement<?>) {
-            //noinspection unchecked
             return createBy((UniqueRequirement<String>) requirement);
         }
         return super.createBy(requirement);
     }
 
     @Nonnull
-    protected String createBy(@Nonnull ContainingRequirement<String, String, Object, Requirement<Object>> requirement) {
-        final String pattern = requirement.pattern();
-        final Matcher matcher = PLACE_HOLDER_PATTERN.matcher(pattern);
+    protected String createBy(@Nonnull TemplateBasedRequirement<String, Pattern> requirement) {
+        final String template = requirement.template();
+        final Matcher matcher = requirement.valuePlaceholderPattern().matcher(template);
+        final Requirement<String> valueRequirement = requirement.valueRequirement();
         boolean result = matcher.find();
         if (result) {
             final StringBuffer sb = new StringBuffer();
             do {
-                matcher.appendReplacement(sb, quoteReplacement(nextUniqueValue()));
+                final String value = createBy(valueRequirement);
+                matcher.appendReplacement(sb, quoteReplacement(value));
                 result = matcher.find();
             } while (result);
             matcher.appendTail(sb);
             return sb.toString();
         }
-        return pattern;
+        return template;
     }
 
     @Nonnull
     protected String createBy(@SuppressWarnings("unused") @Nonnull UniqueRequirement<String> requirement) {
-        return nextUniqueValue();
+        return Objects.toString(uniqueValueSupplier().get(), "");
     }
 
     @Nonnull
     protected Supplier<?> uniqueValueSupplier() {
         return uniqueValueSupplier;
-    }
-
-    @Nonnull
-    protected String nextUniqueValue() {
-        return Objects.toString(uniqueValueSupplier().get(), "");
     }
 
     public static class Builder {

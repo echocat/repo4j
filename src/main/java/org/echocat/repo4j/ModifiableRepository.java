@@ -3,7 +3,7 @@ package org.echocat.repo4j;
 import org.echocat.repo4j.create.Creator;
 import org.echocat.repo4j.create.Requirement;
 import org.echocat.repo4j.matching.Query;
-import org.echocat.repo4j.remove.Remover;
+import org.echocat.repo4j.matching.Remover;
 import org.echocat.repo4j.update.Update;
 import org.echocat.repo4j.update.Updater;
 

@@ -4,11 +4,15 @@ import org.echocat.repo4j.range.Range;
 
 import javax.annotation.Nonnull;
 import java.util.Objects;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.LITERAL;
+import static org.echocat.repo4j.create.Requirement.TemplateBasedRequirement.DEFAULT_PLACEHOLDER_PATTERN;
 
 public interface Requirement<T> {
 
     @Nonnull
-    static <T> FixedRequirement<T> fixedRequirement(@Nonnull T value) {
+    static <T> FixedRequirement<T> fixedRequirementOf(@Nonnull T value) {
         return new FixedRequirement.Base<>(value);
     }
 
@@ -18,12 +22,17 @@ public interface Requirement<T> {
     }
 
     @Nonnull
-    static <T, P, V, VR extends Requirement<V>> ContainingRequirement<T, P, V, VR> containingRequirement(@Nonnull P pattern, @Nonnull VR valueRequirement) {
-        return new ContainingRequirement.Base<>(pattern, valueRequirement);
+    static TemplateBasedRequirement<String, Pattern> templateBasedRequirementOf(@Nonnull String template, @Nonnull Requirement<String> valueRequirement) {
+        return new TemplateBasedRequirement.Base<>(template, DEFAULT_PLACEHOLDER_PATTERN, valueRequirement);
     }
 
     @Nonnull
-    static <T, P> RangeRequirement<T> rangeRequirement(@Nonnull Range<T> range) {
+    static <T, P> TemplateBasedRequirement<T, P> templateBasedRequirementOf(@Nonnull T template, @Nonnull P valuePlaceholderPattern, @Nonnull Requirement<T> valueRequirement) {
+        return new TemplateBasedRequirement.Base<>(template, valuePlaceholderPattern, valueRequirement);
+    }
+
+    @Nonnull
+    static <T, P> RangeRequirement<T> rangeRequirementOf(@Nonnull Range<T> range) {
         return new RangeRequirement.Base<>(range);
     }
 
@@ -105,37 +114,54 @@ public interface Requirement<T> {
 
     }
 
-    interface ContainingRequirement<T, P, V, VR extends Requirement<V>> extends UniqueRequirement<T> {
-        @Nonnull
-        P pattern();
+    interface TemplateBasedRequirement<T, P> extends Requirement<T> {
+
+        public static final String DEFAULT_PLACEHOLDER = "$$";
+        public static final Pattern DEFAULT_PLACEHOLDER_PATTERN = Pattern.compile(DEFAULT_PLACEHOLDER, LITERAL);
 
         @Nonnull
-        VR valueRequirement();
+        T template();
 
-        class Base<T, P, V, VR extends Requirement<V>> implements ContainingRequirement<T, P, V, VR> {
+        @Nonnull
+        P valuePlaceholderPattern();
+
+        @Nonnull
+        Requirement<T> valueRequirement();
+
+        class Base<T, P> implements TemplateBasedRequirement<T, P> {
 
             @Nonnull
-            private final P pattern;
+            private final T template;
             @Nonnull
-            private final VR valueRequirement;
+            private final P valuePlaceholderPattern;
+            @Nonnull
+            private final Requirement<T> valueRequirement;
 
             protected Base(
-                @Nonnull P pattern,
-                @Nonnull VR valueRequirement
+                @Nonnull T template,
+                @Nonnull P valuePlaceholderPattern,
+                @Nonnull Requirement<T> valueRequirement
             ) {
-                this.pattern = pattern;
+                this.template = template;
+                this.valuePlaceholderPattern = valuePlaceholderPattern;
                 this.valueRequirement = valueRequirement;
             }
 
             @Override
             @Nonnull
-            public P pattern() {
-                return pattern;
+            public T template() {
+                return template;
+            }
+
+            @Nonnull
+            @Override
+            public P valuePlaceholderPattern() {
+                return valuePlaceholderPattern;
             }
 
             @Override
             @Nonnull
-            public VR valueRequirement() {
+            public Requirement<T> valueRequirement() {
                 return valueRequirement;
             }
 
@@ -144,22 +170,27 @@ public interface Requirement<T> {
                 if (this == o) {
                     return true;
                 }
-                if (!(o instanceof Requirement.ContainingRequirement)) {
+                if (!(o instanceof Requirement.TemplateBasedRequirement)) {
                     return false;
                 }
-                final ContainingRequirement<?, ?, ?, ?> that = (ContainingRequirement<?, ?, ?, ?>) o;
-                return Objects.equals(pattern(), that.pattern())
+                final TemplateBasedRequirement<?, ?> that = (TemplateBasedRequirement<?, ?>) o;
+                return Objects.equals(template(), that.template())
+                    && Objects.equals(valuePlaceholderPattern(), that.valuePlaceholderPattern())
                     && Objects.equals(valueRequirement(), that.valueRequirement());
             }
 
             @Override
             public int hashCode() {
-                return Objects.hash(pattern(), valueRequirement());
+                return Objects.hash(template(), valuePlaceholderPattern(), valueRequirement());
             }
 
             @Override
             public String toString() {
-                return ContainingRequirement.class.getSimpleName() + "{pattern: " + pattern() + ", valueRequirement: " + valueRequirement() + "}";
+                return TemplateBasedRequirement.class.getSimpleName()
+                    + "{template: " + template()
+                    + ", valuePlaceholderPattern: " + valuePlaceholderPattern()
+                    + ", valueRequirement: " + valueRequirement()
+                    + "}";
             }
 
         }
