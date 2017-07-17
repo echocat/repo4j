@@ -101,8 +101,8 @@ public class EmployeeRepositoryUnitTest {
         final EmployeeRepository instance = givenInstance(employeeA, employeeB);
 
         final List<Employee> actual = instance.findBy(new EmployeeQuery()
-            .withName("bar")
-        ).collect(toList());
+                .withName("bar")
+            , toList());
 
         assertThat(actual, hasSize(1L));
         assertThat(actual, containsAtLeastOneElementThat(isSameInstance(employeeB)));

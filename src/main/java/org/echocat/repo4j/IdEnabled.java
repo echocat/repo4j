@@ -8,4 +8,9 @@ public interface IdEnabled<ID> {
     @Nonnull
     ID getId();
 
+    @Nonnull
+    default ID id() {
+        return getId();
+    }
+
 }
