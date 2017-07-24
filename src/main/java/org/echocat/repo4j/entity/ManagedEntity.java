@@ -1,22 +1,16 @@
 package org.echocat.repo4j.entity;
 
-import org.echocat.repo4j.IdEnabled;
-import org.echocat.repo4j.util.ReflectionUtils;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Optional.ofNullable;
-import static org.echocat.repo4j.util.OptionalUtils.ofNonnull;
-import static org.echocat.repo4j.util.OptionalUtils.valueOf;
 
-public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
+public interface ManagedEntity<ID> extends IdentifiedEntity<ID> {
 
     public static final ZoneId UTC = ZoneId.of("UTC");
 
@@ -27,12 +21,8 @@ public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
     LocalDateTime lastModified();
 
     @Immutable
-    public abstract static class Base<ID> implements ManagedEntity<ID> {
+    public abstract static class Base<ID> extends IdentifiedEntity.Base<ID> implements ManagedEntity<ID> {
 
-        @Nonnull
-        private final Class<?> baseType;
-        @Nonnull
-        private final ID id;
         @Nonnull
         private final LocalDateTime created;
         @Nonnull
@@ -44,15 +34,9 @@ public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
             @Nonnull LocalDateTime created,
             @Nonnull LocalDateTime lastModified
         ) {
-            this.baseType = baseType;
-            this.id = id;
+            super(baseType, id);
             this.created = created;
             this.lastModified = lastModified;
-        }
-
-        @Nonnull
-        protected Class<?> baseType() {
-            return baseType;
         }
 
         @Nonnull
@@ -67,38 +51,11 @@ public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
             return lastModified;
         }
 
-        @Nonnull
-        @Override
-        public ID id() {
-            return id;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) { return true; }
-            if (!baseType().isInstance(o)) { return false; }
-            final ManagedEntity<?> that = (ManagedEntity<?>) o;
-            return Objects.equals(id(), that.id());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(id());
-        }
-
-        @Override
-        public String toString() {
-            return baseType().getSimpleName() + "#" + id() + "{"
-                + ReflectionUtils.toString(this, candidate -> !"id".equals(candidate.left()))
-                + "}";
-        }
-
     }
 
-    public abstract static class BaseBuilder<ID, E extends ManagedEntity<ID>, B extends BaseBuilder<ID, E, B>> implements Builder<E, B> {
+    public abstract static class BaseBuilder<ID, E extends ManagedEntity<ID>, B extends BaseBuilder<ID, E, B>>
+        extends IdentifiedEntity.BaseBuilder<ID, E, B> {
 
-        @Nonnull
-        private Optional<ID> id = Optional.empty();
         @Nonnull
         private Optional<LocalDateTime> created = Optional.empty();
         @Nonnull
@@ -109,19 +66,9 @@ public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
         @Nonnull
         @Override
         public B with(@Nonnull E base) {
-            withId(base.id());
             withCreated(base.created());
             withLastModified(base.lastModified());
-            withInternal(base);
-            return instance();
-        }
-
-        protected abstract void withInternal(@Nonnull E base);
-
-        @Nonnull
-        public B withId(@Nonnull ID id) {
-            this.id = ofNonnull(id, "id");
-            return instance();
+            return super.with(base);
         }
 
         @Nonnull
@@ -137,11 +84,6 @@ public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
         }
 
         @Nonnull
-        protected Optional<ID> id() {
-            return id;
-        }
-
-        @Nonnull
         protected Optional<LocalDateTime> created() {
             return created;
         }
@@ -151,12 +93,13 @@ public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
             return lastModified;
         }
 
+
         @Nonnull
         @Override
-        public E build() {
+        protected E buildInternal(@Nonnull ID id) {
             final LocalDateTime created = created().orElseGet(() -> now(UTC));
             return buildInternal(
-                valueOf(id, "id"),
+                id,
                 created,
                 lastModified().orElse(created)
             );
@@ -164,12 +107,6 @@ public interface ManagedEntity<ID> extends Entity, IdEnabled<ID> {
 
         @Nonnull
         protected abstract E buildInternal(@Nonnull ID id, @Nonnull LocalDateTime created, @Nonnull LocalDateTime lastModified);
-
-        @Nonnull
-        protected B instance() {
-            // noinspection unchecked
-            return (B) this;
-        }
 
     }
 
