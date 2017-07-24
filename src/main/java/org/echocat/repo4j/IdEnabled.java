@@ -6,11 +6,11 @@ import javax.annotation.Nonnull;
 public interface IdEnabled<ID> {
 
     @Nonnull
-    ID getId();
+    ID id();
 
     @Nonnull
-    default ID id() {
-        return getId();
+    default ID getId() {
+        return id();
     }
 
 }

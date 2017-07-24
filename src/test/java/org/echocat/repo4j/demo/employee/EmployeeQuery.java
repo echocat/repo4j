@@ -19,6 +19,11 @@ import static java.util.regex.Pattern.*;
 public class EmployeeQuery implements Query<Employee>, Predicate<Employee> {
 
     @Nonnull
+    public static EmployeeQuery employee() {
+        return new EmployeeQuery();
+    }
+
+    @Nonnull
     private final Set<UUID> id = new HashSet<>();
     @Nonnull
     private Optional<Pattern> name = empty();
@@ -99,18 +104,18 @@ public class EmployeeQuery implements Query<Employee>, Predicate<Employee> {
 
     protected boolean testId(@Nonnull Employee employee) {
         final Set<UUID> id = id();
-        return id.isEmpty() || id.contains(employee.getId());
+        return id.isEmpty() || id.contains(employee.id());
     }
 
     protected boolean testName(@Nonnull Employee employee) {
         return name()
-            .map(pattern -> pattern.matcher(employee.getName()).matches())
+            .map(pattern -> pattern.matcher(employee.name()).matches())
             .orElse(true);
     }
 
     protected boolean testDepartment(@Nonnull Employee employee) {
         final Set<Department> department = department();
-        return department.isEmpty() || department.contains(employee.getDepartment());
+        return department.isEmpty() || department.contains(employee.department());
     }
 
 }

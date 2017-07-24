@@ -2,6 +2,7 @@ package org.echocat.repo4j.matching;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -25,6 +26,17 @@ public interface Retriever<T, Q extends Query<T>> {
         try (final Stream<? extends T> stream = findBy(query)) {
             return stream.findAny();
         }
+    }
+
+    /**
+     * Get one entity that matches given query.
+     *
+     * @throws NoSuchElementException if there is no entity for given query.
+     */
+    @Nonnull
+    default T getOneBy(@Nonnull Q query) throws NoSuchElementException {
+        return findOneBy(query)
+            .orElseThrow(() -> new NoSuchElementException("There does no entity exist for query " + query + "."));
     }
 
     /**

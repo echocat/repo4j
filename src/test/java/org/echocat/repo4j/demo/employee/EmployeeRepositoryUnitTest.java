@@ -1,16 +1,12 @@
 package org.echocat.repo4j.demo.employee;
 
-import org.echocat.repo4j.demo.employee.EmployeeRepository.EmployeeImpl;
 import org.echocat.repo4j.range.Range;
 import org.junit.Test;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.ZonedDateTime.now;
 import static java.util.Collections.addAll;
@@ -18,6 +14,9 @@ import static java.util.stream.Collectors.toList;
 import static org.echocat.repo4j.create.Requirement.*;
 import static org.echocat.repo4j.demo.employee.Employee.Department.accounting;
 import static org.echocat.repo4j.demo.employee.Employee.Department.it;
+import static org.echocat.repo4j.demo.employee.Employee.buildEmployee;
+import static org.echocat.repo4j.demo.employee.EmployeeQuery.employee;
+import static org.echocat.repo4j.demo.employee.EmployeeUpdate.updateEmployeeTo;
 import static org.echocat.repo4j.range.Range.rangeOf;
 import static org.echocat.unittest.utils.matchers.HasSize.hasSize;
 import static org.echocat.unittest.utils.matchers.IsEqualTo.isEqualTo;
@@ -46,11 +45,11 @@ public class EmployeeRepositoryUnitTest {
         );
 
         assertThat(actual1, isNotNull());
-        assertThat(actual1.getId(), isNotNull());
-        assertThat(actual1.getName(), startsWith("Employee "));
-        assertThat(actual1.getBirthday().isAfter(birthdayRange.from().get()), isTrue());
-        assertThat(actual1.getBirthday().isBefore(birthdayRange.to().get()), isTrue());
-        assertThat(actual1.getDepartment(), isEqualTo(it));
+        assertThat(actual1.id(), isNotNull());
+        assertThat(actual1.name(), startsWith("Employee "));
+        assertThat(actual1.birthday().isAfter(birthdayRange.from().get()), isTrue());
+        assertThat(actual1.birthday().isBefore(birthdayRange.to().get()), isTrue());
+        assertThat(actual1.department(), isEqualTo(it));
 
         assertThat(instance.employees(), hasSize(1L));
 
@@ -64,40 +63,44 @@ public class EmployeeRepositoryUnitTest {
         final ZonedDateTime timeA = now();
         final ZonedDateTime timeB = now().minusYears(10);
         final UUID id = new UUID(1, 2);
-        final EmployeeImpl employee = new EmployeeImpl()
-            .setId(id)
-            .setName("foo")
-            .setBirthday(timeA)
-            .setDepartment(it);
+        final Employee employee = buildEmployee()
+            .withId(id)
+            .withName("foo")
+            .withBirthday(timeA)
+            .withDepartment(it)
+            .build();
 
         final EmployeeRepository instance = givenInstance(employee);
 
         instance.update(
-            new EmployeeQuery()
+            employee()
                 .withId(id),
-            new EmployeeUpdate()
-                .setName("bar")
-                .setBirthday(timeB)
+            updateEmployeeTo()
+                .withName("bar")
+                .withBirthday(timeB)
         );
 
-        assertThat(employee.getId(), isSameInstance(id));
-        assertThat(employee.getName(), isEqualTo("bar"));
-        assertThat(employee.getBirthday(), isSameInstance(timeB));
-        assertThat(employee.getDepartment(), isSameInstance(it));
+        final Employee actual = instance.getOneBy(employee().withId(id));
+        assertThat(actual.id(), isSameInstance(id));
+        assertThat(actual.name(), isEqualTo("bar"));
+        assertThat(actual.birthday(), isSameInstance(timeB));
+        assertThat(actual.department(), isSameInstance(it));
     }
 
     @Test
     public void findBy() throws Exception {
-        final EmployeeImpl employeeA = new EmployeeImpl()
-            .setId(UUID.randomUUID())
-            .setName("foo")
-            .setBirthday(now().minusYears(10))
-            .setDepartment(it);
-        final EmployeeImpl employeeB = new EmployeeImpl()
-            .setId(UUID.randomUUID())
-            .setName("bar")
-            .setBirthday(now().minusYears(20))
-            .setDepartment(accounting);
+        final Employee employeeA = buildEmployee()
+            .withId(UUID.randomUUID())
+            .withName("foo")
+            .withBirthday(now().minusYears(10))
+            .withDepartment(it)
+            .build();
+        final Employee employeeB = buildEmployee()
+            .withId(UUID.randomUUID())
+            .withName("bar")
+            .withBirthday(now().minusYears(20))
+            .withDepartment(accounting)
+            .build();
         final EmployeeRepository instance = givenInstance(employeeA, employeeB);
 
         final List<Employee> actual = instance.findBy(new EmployeeQuery()
@@ -110,16 +113,18 @@ public class EmployeeRepositoryUnitTest {
 
     @Test
     public void removeBy() throws Exception {
-        final EmployeeImpl employeeA = new EmployeeImpl()
-            .setId(UUID.randomUUID())
-            .setName("foo")
-            .setBirthday(now().minusYears(10))
-            .setDepartment(it);
-        final EmployeeImpl employeeB = new EmployeeImpl()
-            .setId(UUID.randomUUID())
-            .setName("bar")
-            .setBirthday(now().minusYears(20))
-            .setDepartment(accounting);
+        final Employee employeeA = buildEmployee()
+            .withId(UUID.randomUUID())
+            .withName("foo")
+            .withBirthday(now().minusYears(10))
+            .withDepartment(it)
+            .build();
+        final Employee employeeB = buildEmployee()
+            .withId(UUID.randomUUID())
+            .withName("bar")
+            .withBirthday(now().minusYears(20))
+            .withDepartment(accounting)
+            .build();
         final EmployeeRepository instance = givenInstance(employeeA, employeeB);
 
         assertThat(instance.employees(), hasSize(2L));
@@ -135,8 +140,8 @@ public class EmployeeRepositoryUnitTest {
     }
 
     @Nonnull
-    private static EmployeeRepository givenInstance(@Nullable EmployeeImpl... employees) {
-        final Set<EmployeeImpl> target = new HashSet<>();
+    private static EmployeeRepository givenInstance(@Nullable Employee... employees) {
+        final Set<Employee> target = new HashSet<>();
         if (employees != null) {
             addAll(target, employees);
         }

@@ -9,21 +9,22 @@ import org.echocat.repo4j.demo.employee.Employee.Department;
 import org.echocat.repo4j.util.UniqueValueCreator;
 
 import javax.annotation.Nonnull;
-import java.time.ZonedDateTime;
 import java.util.HashSet;
-import java.util.Objects;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.echocat.repo4j.create.StringCreator.stringCreator;
 import static org.echocat.repo4j.create.ZonedDateTimeCreator.zonedDateTimeCreator;
+import static org.echocat.repo4j.demo.employee.Employee.buildEmployee;
+import static org.echocat.repo4j.util.OptionalUtils.valueOf;
 import static org.echocat.repo4j.util.UniqueValueCreator.uuid;
 
 public class EmployeeRepository implements ModifiableRepository<Employee, EmployeeQuery, EmployeeRequirement, EmployeeUpdate> {
 
     @Nonnull
-    private final Set<EmployeeImpl> employees;
+    private final Set<Employee> employees;
 
     @Nonnull
     private final UniqueValueCreator<UUID> idCreator = uuid().build();
@@ -38,30 +39,35 @@ public class EmployeeRepository implements ModifiableRepository<Employee, Employ
         this(new HashSet<>());
     }
 
-    protected EmployeeRepository(@Nonnull Set<EmployeeImpl> employees) {
+    protected EmployeeRepository(@Nonnull Set<Employee> employees) {
         this.employees = employees;
     }
 
     @Nonnull
     @Override
     public Employee createBy(@Nonnull EmployeeRequirement requirement) {
-        final EmployeeImpl employee = new EmployeeImpl()
-            .setId(idCreator.next())
-            .setName(requirement.name().map(nameCreator::createBy).orElseThrow(() -> new IllegalArgumentException("No name specified in requirement.")))
-            .setBirthday(requirement.birthday().map(birthdayCreator::createBy).orElseThrow(() -> new IllegalArgumentException("No birthday specified in requirement.")))
-            .setDepartment(requirement.department().map(departmentCreator::createBy).orElseThrow(() -> new IllegalArgumentException("No department specified in requirement.")))
-            ;
+        final Employee employee = buildEmployee()
+            .withId(idCreator.next())
+            .withName(valueOf(requirement.name().map(nameCreator::createBy), "name"))
+            .withBirthday(valueOf(requirement.birthday().map(birthdayCreator::createBy), "birthday"))
+            .withDepartment(valueOf(requirement.department().map(departmentCreator::createBy), "department"))
+            .build();
         employees().add(employee);
         return employee;
     }
 
     @Override
     public void update(@Nonnull EmployeeQuery query, @Nonnull EmployeeUpdate by) {
-        findByInternal(query).forEach(candidate -> {
-            by.name().ifPresent(candidate::setName);
-            by.birthday().ifPresent(candidate::setBirthday);
-            by.department().ifPresent(candidate::setDepartment);
-        });
+        final Iterator<Employee> i = employees().iterator();
+        final Set<Employee> updated = new HashSet<>();
+        while (i.hasNext()) {
+            final Employee candidate = i.next();
+            if (query.test(candidate)) {
+                updated.add(by.update(candidate));
+                i.remove();
+            }
+        }
+        employees().addAll(updated);
     }
 
     @Nonnull
@@ -71,7 +77,7 @@ public class EmployeeRepository implements ModifiableRepository<Employee, Employ
     }
 
     @Nonnull
-    private Stream<EmployeeImpl> findByInternal(@Nonnull EmployeeQuery query) {
+    private Stream<Employee> findByInternal(@Nonnull EmployeeQuery query) {
         return employees().stream()
             .filter(query);
     }
@@ -83,88 +89,8 @@ public class EmployeeRepository implements ModifiableRepository<Employee, Employ
     }
 
     @Nonnull
-    protected Set<EmployeeImpl> employees() {
+    protected Set<Employee> employees() {
         return employees;
-    }
-
-    protected static class EmployeeImpl implements Employee {
-
-        private UUID id;
-        private String name;
-        private ZonedDateTime birthday;
-        private Department department;
-
-        @Nonnull
-        @Override
-        public UUID getId() {
-            return id;
-        }
-
-        @Nonnull
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Nonnull
-        @Override
-        public ZonedDateTime getBirthday() {
-            return birthday;
-        }
-
-        @Nonnull
-        @Override
-        public Department getDepartment() {
-            return department;
-        }
-
-        @Nonnull
-        protected EmployeeImpl setId(UUID id) {
-            this.id = id;
-            return this;
-        }
-
-        @Nonnull
-        protected EmployeeImpl setName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        @Nonnull
-        protected EmployeeImpl setBirthday(ZonedDateTime birthday) {
-            this.birthday = birthday;
-            return this;
-        }
-
-        @Nonnull
-        protected EmployeeImpl setDepartment(Department department) {
-            this.department = department;
-            return this;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) { return true; }
-            if (o == null || getClass() != o.getClass()) { return false; }
-            final EmployeeImpl employee = (EmployeeImpl) o;
-            return Objects.equals(getId(), employee.getId());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(getId());
-        }
-
-        @Override
-        public String toString() {
-            return "EmployeeImpl{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", birthday=" + birthday +
-                ", department=" + department +
-                '}';
-        }
-
     }
 
 }

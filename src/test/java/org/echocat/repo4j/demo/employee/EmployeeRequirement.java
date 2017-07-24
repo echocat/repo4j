@@ -13,6 +13,11 @@ import static java.util.Optional.ofNullable;
 public class EmployeeRequirement implements Requirement<Employee> {
 
     @Nonnull
+    public static EmployeeRequirement employeeFor() {
+        return new EmployeeRequirement();
+    }
+
+    @Nonnull
     private Optional<Requirement<String>> name = Optional.empty();
     @Nonnull
     private Optional<Requirement<ZonedDateTime>> birthday = Optional.empty();
