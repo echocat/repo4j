@@ -4,6 +4,7 @@
 [![Build Status](https://travis-ci.org/echocat/repo4j.svg?branch=master)](https://travis-ci.org/echocat/repo4j)
 [![codecov](https://codecov.io/gh/echocat/repo4j/branch/master/graph/badge.svg)](https://codecov.io/gh/echocat/repo4j)
 [![Dependency Status](https://www.versioneye.com/user/projects/todo/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/todo)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fechocat%2Frepo4j.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fechocat%2Frepo4j?ref=badge_shield)
 
 API for repositories in Java.
 
@@ -23,3 +24,6 @@ If you commit code to this project you have to accept that this code will be rel
 ## License
 
 See [LICENSE](LICENSE) file.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fechocat%2Frepo4j.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fechocat%2Frepo4j?ref=badge_large)
