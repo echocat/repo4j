@@ -3,7 +3,6 @@ name: Release
 on:
   release:
     types: [created]
-  pull_request:
 
 jobs:
   publish:
@@ -35,8 +34,7 @@ jobs:
           cache: maven
 
       - name: Adjust version
-#        run: mvn --no-transfer-progress --batch-mode versions:set "-DnewVersion=${{ github.event.release.tag_name }}"
-        run: mvn --no-transfer-progress --batch-mode versions:set "-DnewVersion=2.0.0"
+        run: mvn --no-transfer-progress --batch-mode versions:set "-DnewVersion=${{ github.event.release.tag_name }}"
 
       - name: Maven Deploy
         run: mvn --no-transfer-progress --batch-mode -Psign "-Dgpg.passphrase=${{ secrets.PASSPHRASE }}" -DskipTests=true clean deploy
