@@ -255,11 +255,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>github</id>
-            <url>https://maven.pkg.github.com/echocat/locela-api-java</url>
+            <url>https://maven.pkg.github.com/echocat/repo4j</url>
         </snapshotRepository>
         <repository>
             <id>github</id>
-            <url>https://maven.pkg.github.com/echocat/locela-api-java</url>
+            <url>https://maven.pkg.github.com/echocat/repo4j</url>
         </repository>
     </distributionManagement>
 
