@@ -15,7 +15,7 @@ import static org.echocat.repo4j.util.OptionalUtils.valueOf;
 public interface IdentifiedEntity<ID> extends Entity, IdEnabled<ID> {
 
     @Immutable
-    public abstract static class Base<ID> implements IdentifiedEntity<ID> {
+    abstract class Base<ID> implements IdentifiedEntity<ID> {
 
         @Nonnull
         private final Class<?> baseType;
@@ -63,7 +63,7 @@ public interface IdentifiedEntity<ID> extends Entity, IdEnabled<ID> {
 
     }
 
-    public abstract static class BaseBuilder<ID, E extends IdentifiedEntity<ID>, B extends BaseBuilder<ID, E, B>> implements Builder<E, B> {
+    abstract class BaseBuilder<ID, E extends IdentifiedEntity<ID>, B extends BaseBuilder<ID, E, B>> implements Builder<E, B> {
 
         @Nonnull
         private Optional<ID> id = Optional.empty();

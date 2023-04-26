@@ -94,6 +94,7 @@ public interface Requirement<T> {
                 if (this == o) {
                     return true;
                 }
+                //noinspection RedundantIfStatement
                 if (!(o instanceof UniqueRequirement)) {
                     return false;
                 }
@@ -116,8 +117,8 @@ public interface Requirement<T> {
 
     interface TemplateBasedRequirement<T, P> extends Requirement<T> {
 
-        public static final String DEFAULT_PLACEHOLDER = "$$";
-        public static final Pattern DEFAULT_PLACEHOLDER_PATTERN = Pattern.compile(DEFAULT_PLACEHOLDER, LITERAL);
+        String DEFAULT_PLACEHOLDER = "$$";
+        Pattern DEFAULT_PLACEHOLDER_PATTERN = Pattern.compile(DEFAULT_PLACEHOLDER, LITERAL);
 
         @Nonnull
         T template();

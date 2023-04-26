@@ -25,13 +25,13 @@ import static org.echocat.unittest.utils.matchers.IsNull.isNotNull;
 import static org.echocat.unittest.utils.matchers.IsSameAs.isSameInstance;
 import static org.echocat.unittest.utils.matchers.IterableMatchers.containsAtLeastOneElementThat;
 import static org.echocat.unittest.utils.matchers.StringMatchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "OptionalGetWithoutIsPresent"})
 public class EmployeeRepositoryUnitTest {
 
     @Test
-    public void createBy() throws Exception {
+    public void createBy() {
         final EmployeeRepository instance = givenInstance();
         final ZonedDateTime now = now();
         final Range<ZonedDateTime> birthdayRange = rangeOf(now.minusYears(50), now.minusYears(10));
@@ -59,7 +59,7 @@ public class EmployeeRepositoryUnitTest {
     }
 
     @Test
-    public void update() throws Exception {
+    public void update() {
         final ZonedDateTime timeA = now();
         final ZonedDateTime timeB = now().minusYears(10);
         final UUID id = new UUID(1, 2);
@@ -88,7 +88,7 @@ public class EmployeeRepositoryUnitTest {
     }
 
     @Test
-    public void findBy() throws Exception {
+    public void findBy() {
         final Employee employeeA = buildEmployee()
             .withId(UUID.randomUUID())
             .withName("foo")
@@ -112,7 +112,7 @@ public class EmployeeRepositoryUnitTest {
     }
 
     @Test
-    public void removeBy() throws Exception {
+    public void removeBy() {
         final Employee employeeA = buildEmployee()
             .withId(UUID.randomUUID())
             .withName("foo")

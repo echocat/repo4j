@@ -112,7 +112,7 @@ public class Employee extends ManagedEntity.Base<UUID> {
     public enum Department {
         it,
         accounting,
-        mangement
+        management
     }
 
 }

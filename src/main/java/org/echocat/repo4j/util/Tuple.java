@@ -14,7 +14,7 @@ public interface Tuple<L, R> {
         return new Impl<>(left, right);
     }
 
-    static class Impl<L, R> implements Tuple<L, R> {
+    class Impl<L, R> implements Tuple<L, R> {
 
         private final L left;
         private final R right;

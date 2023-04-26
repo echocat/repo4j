@@ -12,7 +12,7 @@ import static java.util.Optional.ofNullable;
 
 public interface ManagedEntity<ID> extends IdentifiedEntity<ID> {
 
-    public static final ZoneId UTC = ZoneId.of("UTC");
+    ZoneId UTC = ZoneId.of("UTC");
 
     @Nonnull
     LocalDateTime created();
@@ -21,7 +21,7 @@ public interface ManagedEntity<ID> extends IdentifiedEntity<ID> {
     LocalDateTime lastModified();
 
     @Immutable
-    public abstract static class Base<ID> extends IdentifiedEntity.Base<ID> implements ManagedEntity<ID> {
+    abstract class Base<ID> extends IdentifiedEntity.Base<ID> implements ManagedEntity<ID> {
 
         @Nonnull
         private final LocalDateTime created;
@@ -53,7 +53,7 @@ public interface ManagedEntity<ID> extends IdentifiedEntity<ID> {
 
     }
 
-    public abstract static class BaseBuilder<ID, E extends ManagedEntity<ID>, B extends BaseBuilder<ID, E, B>>
+    abstract class BaseBuilder<ID, E extends ManagedEntity<ID>, B extends BaseBuilder<ID, E, B>>
         extends IdentifiedEntity.BaseBuilder<ID, E, B> {
 
         @Nonnull

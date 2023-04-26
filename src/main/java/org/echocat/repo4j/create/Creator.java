@@ -30,7 +30,7 @@ public interface Creator<V, R extends Requirement<V>> extends Function<R, V> {
         return new Base<>(type);
     }
 
-    static class Base<V, R extends Requirement<V>> implements Creator<V, R> {
+    class Base<V, R extends Requirement<V>> implements Creator<V, R> {
 
         @Nonnull
         private final Class<V> type;

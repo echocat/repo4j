@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import static org.echocat.repo4j.util.RandomUtils.nextLongFor;
 import static org.echocat.repo4j.util.UniqueValueCreator.serial;
 
+@SuppressWarnings("UseOfObsoleteDateTimeApi")
 @Immutable
 @ThreadSafe
 public class DateCreator extends NumberCreatorSupport<Date, Long, Requirement<Date>> {

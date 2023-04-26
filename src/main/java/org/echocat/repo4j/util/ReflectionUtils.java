@@ -95,7 +95,7 @@ public class ReflectionUtils {
         for (final Method candidate : type.getMethods()) {
             if (candidate.getParameterCount() == 0) {
                 final Class<?> returnType = candidate.getReturnType();
-                if (returnType != null && !Void.class.equals(returnType)) {
+                if (!Void.class.equals(returnType)) {
                     if (!isStatic(candidate.getModifiers())) {
                         if (!Object.class.equals(candidate.getDeclaringClass())) {
                             propertyNameOf(candidate).ifPresent(propertyName -> result.put(propertyName, candidate));
