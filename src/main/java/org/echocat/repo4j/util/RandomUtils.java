@@ -38,6 +38,7 @@ public class RandomUtils {
             if ((n & m) == 0) {
                 r = (r & m) + origin;
             } else if (n > 0) {
+                //noinspection StatementWithEmptyBody
                 for (int u = r >>> 1; u + m - (r = u % n) < 0; u = random.nextInt() >>> 1) { }
                 r += origin;
             } else {
@@ -57,6 +58,7 @@ public class RandomUtils {
             if ((n & m) == 0L) {
                 r = (r & m) + origin;
             } else if (n > 0L) {
+                //noinspection StatementWithEmptyBody
                 for (long u = r >>> 1; u + m - (r = u % n) < 0L; u = random.nextLong() >>> 1) {}
                 r += origin;
             } else {

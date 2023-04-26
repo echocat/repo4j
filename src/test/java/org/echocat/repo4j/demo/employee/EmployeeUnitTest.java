@@ -7,12 +7,12 @@ import static java.util.UUID.randomUUID;
 import static org.echocat.repo4j.demo.employee.Employee.Department.it;
 import static org.echocat.repo4j.demo.employee.Employee.buildEmployee;
 import static org.echocat.unittest.utils.matchers.IsEqualTo.isEqualTo;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class EmployeeUnitTest {
 
     @Test
-    public void rightOutputOfToString() throws Exception {
+    public void rightOutputOfToString() {
         final Employee employee = buildEmployee()
             .withId(randomUUID())
             .withName("name")

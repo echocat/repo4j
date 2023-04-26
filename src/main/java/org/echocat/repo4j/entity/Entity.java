@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 public interface Entity {
 
-    public interface Builder<E extends Entity, B extends Builder<E, B>> {
+    interface Builder<E extends Entity, B extends Builder<E, B>> {
 
         @Nonnull
         B with(@Nonnull E base);

@@ -5,10 +5,7 @@ import org.echocat.repo4j.matching.Query;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -32,7 +29,7 @@ public class EmployeeQuery implements Query<Employee>, Predicate<Employee> {
 
     @Nonnull
     public Set<UUID> id() {
-        return id;
+        return Collections.unmodifiableSet(id);
     }
 
     @Nonnull
@@ -42,7 +39,7 @@ public class EmployeeQuery implements Query<Employee>, Predicate<Employee> {
 
     @Nonnull
     public Set<Department> department() {
-        return department;
+        return Collections.unmodifiableSet(department);
     }
 
     @Nonnull

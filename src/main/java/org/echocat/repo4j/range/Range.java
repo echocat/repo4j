@@ -10,7 +10,6 @@ import javax.annotation.concurrent.ThreadSafe;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Optional.ofNullable;

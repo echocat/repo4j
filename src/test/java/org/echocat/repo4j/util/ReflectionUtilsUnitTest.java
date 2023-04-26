@@ -5,12 +5,12 @@ import org.junit.Test;
 import static org.echocat.repo4j.util.ReflectionUtils.toPropertyName;
 import static org.echocat.unittest.utils.matchers.IsEqualTo.isEqualTo;
 import static org.echocat.unittest.utils.matchers.OptionalMatchers.whereContentMatches;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ReflectionUtilsUnitTest {
 
     @Test
-    public void testToPropertyName() throws Exception {
+    public void testToPropertyName() {
         assertThat(toPropertyName("getFoo"), whereContentMatches(isEqualTo("foo")));
         assertThat(toPropertyName("getFooBar"), whereContentMatches(isEqualTo("fooBar")));
         assertThat(toPropertyName("isFoo"), whereContentMatches(isEqualTo("foo")));

@@ -9,10 +9,7 @@ import org.echocat.repo4j.demo.employee.Employee.Department;
 import org.echocat.repo4j.util.UniqueValueCreator;
 
 import javax.annotation.Nonnull;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.echocat.repo4j.create.StringCreator.stringCreator;
@@ -40,7 +37,7 @@ public class EmployeeRepository implements ModifiableRepository<Employee, Employ
     }
 
     protected EmployeeRepository(@Nonnull Set<Employee> employees) {
-        this.employees = employees;
+        this.employees = new HashSet<>(employees);
     }
 
     @Nonnull
@@ -52,13 +49,13 @@ public class EmployeeRepository implements ModifiableRepository<Employee, Employ
             .withBirthday(valueOf(requirement.birthday().map(birthdayCreator::createBy), "birthday"))
             .withDepartment(valueOf(requirement.department().map(departmentCreator::createBy), "department"))
             .build();
-        employees().add(employee);
+        employees.add(employee);
         return employee;
     }
 
     @Override
     public void update(@Nonnull EmployeeQuery query, @Nonnull EmployeeUpdate by) {
-        final Iterator<Employee> i = employees().iterator();
+        final Iterator<Employee> i = employees.iterator();
         final Set<Employee> updated = new HashSet<>();
         while (i.hasNext()) {
             final Employee candidate = i.next();
@@ -67,7 +64,7 @@ public class EmployeeRepository implements ModifiableRepository<Employee, Employ
                 i.remove();
             }
         }
-        employees().addAll(updated);
+        employees.addAll(updated);
     }
 
     @Nonnull
@@ -84,13 +81,13 @@ public class EmployeeRepository implements ModifiableRepository<Employee, Employ
 
     @Override
     public Long removeBy(@Nonnull EmployeeQuery query) {
-        employees().removeIf(query);
+        employees.removeIf(query);
         return null;
     }
 
     @Nonnull
     protected Set<Employee> employees() {
-        return employees;
+        return Collections.unmodifiableSet(employees);
     }
 
 }

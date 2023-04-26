@@ -49,7 +49,7 @@ public interface UniqueValueCreator<V> extends Supplier<V> {
 
     @Immutable
     @ThreadSafe
-    static class Uuid implements UniqueValueCreator<UUID> {
+    class Uuid implements UniqueValueCreator<UUID> {
 
         @Nonnull
         private final java.util.Random random;
@@ -99,7 +99,7 @@ public interface UniqueValueCreator<V> extends Supplier<V> {
 
     @Immutable
     @ThreadSafe
-    static class UuidBuilder {
+    class UuidBuilder {
 
         @Nonnull
         private Optional<Random> random = empty();
@@ -121,7 +121,7 @@ public interface UniqueValueCreator<V> extends Supplier<V> {
 
     }
 
-    static class Serial<T extends Number> implements UniqueValueCreator<T> {
+    class Serial<T extends Number> implements UniqueValueCreator<T> {
 
         @Nonnull
         private final Class<T> type;
@@ -185,7 +185,7 @@ public interface UniqueValueCreator<V> extends Supplier<V> {
 
     }
 
-    static class SerialBuilder<T extends Number> {
+    class SerialBuilder<T extends Number> {
 
         @Nonnull
         private final Class<T> type;
@@ -228,13 +228,13 @@ public interface UniqueValueCreator<V> extends Supplier<V> {
             if (Short.class.equals(type)) {
                 return (BiFunction<Short, Short, Short>) (current, incrementBy) -> (short) (current + incrementBy);
             } else if (Integer.class.equals(type)) {
-                return (BiFunction<Integer, Integer, Integer>) (current, incrementBy) -> current + incrementBy;
+                return (BiFunction<Integer, Integer, Integer>) Integer::sum;
             } else if (Long.class.equals(type)) {
-                return (BiFunction<Long, Long, Long>) (current, incrementBy) -> current + incrementBy;
+                return (BiFunction<Long, Long, Long>) Long::sum;
             } else if (Float.class.equals(type)) {
-                return (BiFunction<Float, Float, Float>) (current, incrementBy) -> current + incrementBy;
+                return (BiFunction<Float, Float, Float>) Float::sum;
             } else if (Double.class.equals(type)) {
-                return (BiFunction<Double, Double, Double>) (current, incrementBy) -> current + incrementBy;
+                return (BiFunction<Double, Double, Double>) Double::sum;
             }
             throw new UnsupportedOperationException("Could not handle type: " + type.getName());
         }
