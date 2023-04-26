@@ -24,7 +24,3 @@ jobs:
 
       - name: Maven Verify
         run: mvn --no-transfer-progress --batch-mode --update-snapshots --fail-at-end clean verify
-
-      - name: Publish Test Report
-        if: success() || failure()
-        uses: scacap/action-surefire-report@v1
